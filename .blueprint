@@ -1,0 +1,38 @@
+created:
+    - database/factories/RestaurantFactory.php
+    - database/factories/CustomerFactory.php
+    - database/factories/CategoryFactory.php
+    - database/factories/MenuItemFactory.php
+    - database/factories/ComplementFactory.php
+    - database/factories/CartFactory.php
+    - database/factories/CartItemFactory.php
+    - database/factories/OrderFactory.php
+    - database/factories/OrderItemFactory.php
+    - database/migrations/2025_01_08_172652_create_restaurants_table.php
+    - database/migrations/2025_01_08_172653_create_customers_table.php
+    - database/migrations/2025_01_08_172654_create_categories_table.php
+    - database/migrations/2025_01_08_172655_create_menu_items_table.php
+    - database/migrations/2025_01_08_172656_create_complements_table.php
+    - database/migrations/2025_01_08_172657_create_carts_table.php
+    - database/migrations/2025_01_08_172658_create_cart_items_table.php
+    - database/migrations/2025_01_08_172659_create_orders_table.php
+    - database/migrations/2025_01_08_172700_create_order_items_table.php
+    - app/Models/Restaurant.php
+    - app/Models/Customer.php
+    - app/Models/Category.php
+    - app/Models/MenuItem.php
+    - app/Models/Complement.php
+    - app/Models/Cart.php
+    - app/Models/CartItem.php
+    - app/Models/Order.php
+    - app/Models/OrderItem.php
+models:
+    Restaurant: { id: 'id unsigned', subdomain: 'string:100 unique', name: 'string:255', address: json, color: json, opening_hours: 'json nullable', photo_url: 'string:255 nullable', owner_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: Owner, hasMany: 'Customer,Category,Order,MenuItem' } }
+    Customer: { id: 'id unsigned', name: 'string:255', phone_number: 'string:15', address: json, restaurant_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: Restaurant } }
+    Category: { id: 'id unsigned', name: 'string:100', restaurant_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: Restaurant, hasMany: MenuItem } }
+    MenuItem: { id: 'id unsigned', name: 'string:255', description: 'text nullable', price: 'decimal:10,2', image_url: 'string:255 nullable', is_available: 'boolean default:true', restaurant_id: 'id unsigned foreign ondelete:cascade', category_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: 'Restaurant,Category', hasMany: 'Complement,OrderItem' } }
+    Complement: { id: 'id unsigned', name: 'string:100', price: 'decimal:10,2', image_url: 'string:255 nullable', product_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: MenuItem } }
+    Cart: { id: 'id unsigned', customer_id: 'id unsigned foreign ondelete:cascade', restaurant_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: 'Customer,Restaurant', hasMany: CartItem } }
+    CartItem: { id: 'id unsigned', cart_id: 'id unsigned foreign ondelete:cascade', product_id: 'id unsigned foreign ondelete:cascade', quantity: unsignedInteger, price: 'decimal:10,2', timestamps: timestamps, relationships: { belongsTo: 'Cart,MenuItem' } }
+    Order: { id: 'id unsigned', status: 'enum:pending,completed,canceled default:pending', total_price: 'decimal:10,2', customer_id: 'id unsigned foreign ondelete:cascade', restaurant_id: 'id unsigned foreign ondelete:cascade', timestamps: timestamps, relationships: { belongsTo: 'Customer,Restaurant', hasMany: OrderItem } }
+    OrderItem: { id: 'id unsigned', order_id: 'id unsigned foreign ondelete:cascade', product_id: 'id unsigned foreign ondelete:cascade', complement_id: 'id unsigned foreign nullable ondelete:cascade', quantity: unsignedInteger, price: 'decimal:10,2', timestamps: timestamps, relationships: { belongsTo: 'Order,MenuItem,Complement' } }
